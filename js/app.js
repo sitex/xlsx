@@ -261,8 +261,8 @@ function createResultItem(result, index) {
         ? `Sheet: ${escapeHtml(result.sheetName)} | Row: ${result.rowNumber}`
         : `Row: ${result.rowNumber}`;
 
-    // Use JSON.stringify for safe escaping of sheet name in onclick handlers
-    const safeSheetName = JSON.stringify(result.sheetName);
+    // Escape sheet name for onclick - replace quotes with HTML entities
+    const safeSheetName = result.sheetName.replace(/&/g, '&amp;').replace(/'/g, '&#39;');
 
     div.innerHTML = `
         <h4>${headerText}</h4>
@@ -278,10 +278,10 @@ function createResultItem(result, index) {
                    min="0">
         </label>
         <div class="result-actions">
-            <button class="save-btn" onclick="saveQuantityMulti(${index}, ${safeSheetName}, ${result.rowNumber})">
+            <button class="save-btn" onclick="saveQuantityMulti(${index}, '${safeSheetName}', ${result.rowNumber})">
                 Save Quantity
             </button>
-            <button class="highlight-btn" onclick="toggleHighlightMulti(${index}, ${safeSheetName}, ${result.rowNumber})">
+            <button class="highlight-btn" onclick="toggleHighlightMulti(${index}, '${safeSheetName}', ${result.rowNumber})">
                 ${isHighlighted ? 'Remove Highlight' : 'Highlight Low Stock'}
             </button>
         </div>
