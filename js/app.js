@@ -292,14 +292,13 @@ function createResultItem(result, index) {
 }
 
 /**
- * Check if a row has yellow background highlight (WAREHOUSE only)
+ * Check if quantity cell has yellow background highlight (WAREHOUSE only)
  */
 function checkRowHighlight(rowNumber) {
     const sheet = workbook.getWorksheet(CONFIG.headerSheet);
     if (!sheet) return false;
 
-    const row = sheet.getRow(rowNumber);
-    const cell = row.getCell(columnLetterToIndex(CONFIG.skuColumn));
+    const cell = sheet.getCell(rowNumber, columnLetterToIndex(CONFIG.quantityColumn));
 
     if (cell.fill && cell.fill.fgColor) {
         const color = cell.fill.fgColor.argb || '';
@@ -319,8 +318,7 @@ function checkRowHighlightMulti(sheetName, rowNumber) {
     const sheet = workbook.getWorksheet(sheetName);
     if (!sheet) return false;
 
-    const row = sheet.getRow(rowNumber);
-    const cell = row.getCell(columnLetterToIndex(CONFIG.skuColumn));
+    const cell = sheet.getCell(rowNumber, columnLetterToIndex(CONFIG.quantityColumn));
 
     if (cell.fill && cell.fill.fgColor) {
         const color = cell.fill.fgColor.argb || '';
@@ -571,21 +569,18 @@ function toggleHighlight(index, rowNumber) {
     const resultItem = document.getElementById(`result-${index}`);
     const isCurrentlyHighlighted = resultItem.classList.contains('highlighted');
 
-    const startCol = columnLetterToIndex('A');
-    const endCol = columnLetterToIndex(CONFIG.dateColumnsEnd) + 1;
+    // Only highlight the quantity cell (column J)
+    const qtyColIndex = columnLetterToIndex(CONFIG.quantityColumn);
+    const cell = sheet.getCell(rowNumber, qtyColIndex);
 
-    // Apply fill to each cell individually
-    for (let col = startCol; col <= endCol; col++) {
-        const cell = sheet.getCell(rowNumber, col);
-        if (isCurrentlyHighlighted) {
-            cell.fill = { type: 'pattern', pattern: 'none' };
-        } else {
-            cell.fill = {
-                type: 'pattern',
-                pattern: 'solid',
-                fgColor: { argb: 'FFFFFF00' }
-            };
-        }
+    if (isCurrentlyHighlighted) {
+        cell.fill = { type: 'pattern', pattern: 'none' };
+    } else {
+        cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFFFFF00' }
+        };
     }
 
     // Update UI
@@ -596,7 +591,7 @@ function toggleHighlight(index, rowNumber) {
     } else {
         resultItem.classList.add('highlighted');
         resultItem.querySelector('.highlight-btn').textContent = 'Remove Highlight';
-        showStatus('Row highlighted yellow for low stock', 'success');
+        showStatus('Cell highlighted yellow for low stock', 'success');
     }
 }
 
@@ -623,21 +618,18 @@ function toggleHighlightMulti(index, sheetName, rowNumber) {
     }
     const isCurrentlyHighlighted = resultItem.classList.contains('highlighted');
 
-    const startCol = columnLetterToIndex('A');
-    const endCol = columnLetterToIndex(CONFIG.dateColumnsEnd) + 1;
+    // Only highlight the quantity cell (column J)
+    const qtyColIndex = columnLetterToIndex(CONFIG.quantityColumn);
+    const cell = sheet.getCell(rowNumber, qtyColIndex);
 
-    // Apply fill to each cell individually to avoid shared reference issues
-    for (let col = startCol; col <= endCol; col++) {
-        const cell = sheet.getCell(rowNumber, col);
-        if (isCurrentlyHighlighted) {
-            cell.fill = { type: 'pattern', pattern: 'none' };
-        } else {
-            cell.fill = {
-                type: 'pattern',
-                pattern: 'solid',
-                fgColor: { argb: 'FFFFFF00' }
-            };
-        }
+    if (isCurrentlyHighlighted) {
+        cell.fill = { type: 'pattern', pattern: 'none' };
+    } else {
+        cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFFFFF00' }
+        };
     }
 
     if (isCurrentlyHighlighted) {
