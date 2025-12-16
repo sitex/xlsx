@@ -569,17 +569,26 @@ function toggleHighlight(index, rowNumber) {
     const resultItem = document.getElementById(`result-${index}`);
     const isCurrentlyHighlighted = resultItem.classList.contains('highlighted');
 
-    // Only highlight the quantity cell (column J) using cell address
+    // Only highlight the quantity cell (column J)
     const cellAddress = `${CONFIG.quantityColumn}${rowNumber}`;
-    const cell = sheet.getCell(cellAddress);
+    const row = sheet.getRow(rowNumber);
+    const colIndex = columnLetterToIndex(CONFIG.quantityColumn);
+    const cell = row.getCell(colIndex);
 
+    // Create a completely new style object to avoid shared style issues
     if (isCurrentlyHighlighted) {
-        cell.fill = { type: 'pattern', pattern: 'none' };
+        cell.style = {
+            ...cell.style,
+            fill: undefined
+        };
     } else {
-        cell.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'FFFFFF00' }
+        cell.style = {
+            ...cell.style,
+            fill: {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FFFFFF00' }
+            }
         };
     }
 
@@ -622,16 +631,27 @@ function toggleHighlightMulti(index, sheetName, rowNumber) {
     const cellAddress = `${CONFIG.quantityColumn}${rowNumber}`;
     console.log(`Targeting cell: ${cellAddress}`);
 
-    const cell = sheet.getCell(cellAddress);
+    const row = sheet.getRow(rowNumber);
+    const colIndex = columnLetterToIndex(CONFIG.quantityColumn);
+    const cell = row.getCell(colIndex);
 
+    // Create a completely new style object to avoid shared style issues
     if (isCurrentlyHighlighted) {
-        cell.fill = { type: 'pattern', pattern: 'none' };
+        // Copy existing style but remove fill
+        cell.style = {
+            ...cell.style,
+            fill: undefined
+        };
         console.log(`Removed highlight from ${cellAddress}`);
     } else {
-        cell.fill = {
-            type: 'pattern',
-            pattern: 'solid',
-            fgColor: { argb: 'FFFFFF00' }
+        // Copy existing style and add yellow fill
+        cell.style = {
+            ...cell.style,
+            fill: {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FFFFFF00' }
+            }
         };
         console.log(`Applied highlight to ${cellAddress}`);
     }
