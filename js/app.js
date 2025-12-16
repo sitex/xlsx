@@ -427,6 +427,9 @@ function saveQuantity(index, rowNumber) {
     } else {
         showStatus(`Saved: Qty=${newQuantity} (No empty date column in L-T range)`, 'success');
     }
+
+    // Auto-update header
+    updateHeader(true);
 }
 
 /**
@@ -492,6 +495,8 @@ function saveQuantityMulti(index, sheetName, rowNumber) {
         showStatus(`Saved on ${sheetName}: Qty=${newQuantity} (No empty date column)`, 'success');
     }
 
+    // Auto-update header
+    updateHeader(true);
 }
 
 /**
@@ -602,6 +607,9 @@ function toggleHighlight(index, rowNumber) {
         resultItem.querySelector('.highlight-btn').textContent = 'Remove Highlight';
         showStatus(`Cell ${cellAddress} highlighted`, 'success');
     }
+
+    // Auto-update header
+    updateHeader(true);
 }
 
 /**
@@ -665,10 +673,37 @@ function toggleHighlightMulti(index, sheetName, rowNumber) {
         resultItem.querySelector('.highlight-btn').textContent = 'Remove Highlight';
         showStatus(`Cell ${cellAddress} highlighted`, 'success');
     }
+
+    // Auto-update header
+    updateHeader(true);
 }
 
 /**
  * Update header cell (G1 on WAREHOUSE sheet) with name and date
+ * @param {boolean} silent - If true, don't show status message
+ */
+function updateHeader(silent = false) {
+    if (!workbook) return;
+
+    const sheet = workbook.getWorksheet(CONFIG.headerSheet);
+    if (!sheet) return;
+
+    const name = nameInput ? nameInput.value.trim() : '';
+    const dateStr = formatDate(new Date());
+    const headerText = name
+        ? `Date Changed - ${dateStr} ${name}`
+        : `Date Changed - ${dateStr}`;
+
+    const cell = sheet.getCell(CONFIG.headerCell);
+    cell.value = headerText;
+
+    if (!silent) {
+        showStatus(`Header updated: "${headerText}"`, 'success');
+    }
+}
+
+/**
+ * Handle manual header update button click
  */
 function handleUpdateHeader() {
     const name = nameInput.value.trim();
@@ -682,19 +717,7 @@ function handleUpdateHeader() {
         return;
     }
 
-    const sheet = workbook.getWorksheet(CONFIG.headerSheet);
-    if (!sheet) {
-        showStatus(`Sheet "${CONFIG.headerSheet}" not found`, 'error');
-        return;
-    }
-
-    const dateStr = formatDate(new Date());
-    const headerText = `Date Changed - ${dateStr} ${name}`;
-
-    const cell = sheet.getCell(CONFIG.headerCell);
-    cell.value = headerText;
-
-    showStatus(`Header updated: "${headerText}"`, 'success');
+    updateHeader(false);
 }
 
 // Export functions to global scope (required for inline onclick handlers)
