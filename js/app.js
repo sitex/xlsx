@@ -26,9 +26,6 @@ const searchSection = document.getElementById('search-section');
 const skuInput = document.getElementById('sku-input');
 const searchBtn = document.getElementById('search-btn');
 const resultsDiv = document.getElementById('results');
-const headerSection = document.getElementById('header-section');
-const nameInput = document.getElementById('name-input');
-const updateHeaderBtn = document.getElementById('update-header-btn');
 
 // Initialize event listeners
 document.addEventListener('DOMContentLoaded', init);
@@ -37,7 +34,6 @@ function init() {
     fileInput.addEventListener('change', handleFileUpload);
     downloadBtn.addEventListener('click', handleDownload);
     searchBtn.addEventListener('click', handleSearch);
-    updateHeaderBtn.addEventListener('click', handleUpdateHeader);
 
     // Allow Enter key to trigger search
     skuInput.addEventListener('keypress', (e) => {
@@ -70,7 +66,6 @@ async function handleFileUpload(event) {
         // Enable UI elements
         downloadBtn.disabled = false;
         searchSection.style.display = 'block';
-        headerSection.style.display = 'block';
 
         showStatus(`Loaded: ${fileName} (${workbook.worksheets.length} sheets)`, 'success');
     } catch (error) {
@@ -679,7 +674,7 @@ function toggleHighlightMulti(index, sheetName, rowNumber) {
 }
 
 /**
- * Update header cell (G1 on WAREHOUSE sheet) with name and date
+ * Update header cell (G1 on WAREHOUSE sheet) with date and "Auto"
  * @param {boolean} silent - If true, don't show status message
  */
 function updateHeader(silent = false) {
@@ -688,11 +683,8 @@ function updateHeader(silent = false) {
     const sheet = workbook.getWorksheet(CONFIG.headerSheet);
     if (!sheet) return;
 
-    const name = nameInput ? nameInput.value.trim() : '';
     const dateStr = formatDate(new Date());
-    const headerText = name
-        ? `Date Changed - ${dateStr} ${name}`
-        : `Date Changed - ${dateStr}`;
+    const headerText = `Date Changed - ${dateStr} Auto`;
 
     const cell = sheet.getCell(CONFIG.headerCell);
     cell.value = headerText;
@@ -700,24 +692,6 @@ function updateHeader(silent = false) {
     if (!silent) {
         showStatus(`Header updated: "${headerText}"`, 'success');
     }
-}
-
-/**
- * Handle manual header update button click
- */
-function handleUpdateHeader() {
-    const name = nameInput.value.trim();
-    if (!name) {
-        showStatus('Please enter your name', 'error');
-        return;
-    }
-
-    if (!workbook) {
-        showStatus('Please load a file first', 'error');
-        return;
-    }
-
-    updateHeader(false);
 }
 
 // Export functions to global scope (required for inline onclick handlers)
