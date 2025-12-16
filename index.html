@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Editor</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Inventory Editor</h1>
+        </header>
+
+        <section id="file-section">
+            <input type="file" id="file-input" accept=".xlsx">
+            <button id="download-btn" disabled>Download Modified File</button>
+        </section>
+
+        <section id="search-section" style="display: none;">
+            <div class="search-options">
+                <label>
+                    <input type="checkbox" id="search-all-sheets" checked>
+                    Search all sheets
+                </label>
+            </div>
+            <input type="text" id="sku-input" placeholder="Enter SKU to search...">
+            <button id="search-btn">Search</button>
+        </section>
+
+        <section id="results-section">
+            <div id="results"></div>
+        </section>
+
+        <section id="header-section" style="display: none;">
+            <h3>Update Header</h3>
+            <input type="text" id="name-input" placeholder="Your name">
+            <button id="update-header-btn">Update Header (G1 on WAREHOUSE)</button>
+        </section>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
