@@ -569,9 +569,9 @@ function toggleHighlight(index, rowNumber) {
     const resultItem = document.getElementById(`result-${index}`);
     const isCurrentlyHighlighted = resultItem.classList.contains('highlighted');
 
-    // Only highlight the quantity cell (column J)
-    const qtyColIndex = columnLetterToIndex(CONFIG.quantityColumn);
-    const cell = sheet.getCell(rowNumber, qtyColIndex);
+    // Only highlight the quantity cell (column J) using cell address
+    const cellAddress = `${CONFIG.quantityColumn}${rowNumber}`;
+    const cell = sheet.getCell(cellAddress);
 
     if (isCurrentlyHighlighted) {
         cell.fill = { type: 'pattern', pattern: 'none' };
@@ -587,11 +587,11 @@ function toggleHighlight(index, rowNumber) {
     if (isCurrentlyHighlighted) {
         resultItem.classList.remove('highlighted');
         resultItem.querySelector('.highlight-btn').textContent = 'Highlight Low Stock';
-        showStatus('Highlight removed', 'success');
+        showStatus(`Highlight removed from ${cellAddress}`, 'success');
     } else {
         resultItem.classList.add('highlighted');
         resultItem.querySelector('.highlight-btn').textContent = 'Remove Highlight';
-        showStatus('Cell highlighted yellow for low stock', 'success');
+        showStatus(`Cell ${cellAddress} highlighted`, 'success');
     }
 }
 
@@ -618,28 +618,32 @@ function toggleHighlightMulti(index, sheetName, rowNumber) {
     }
     const isCurrentlyHighlighted = resultItem.classList.contains('highlighted');
 
-    // Only highlight the quantity cell (column J)
-    const qtyColIndex = columnLetterToIndex(CONFIG.quantityColumn);
-    const cell = sheet.getCell(rowNumber, qtyColIndex);
+    // Only highlight the quantity cell (column J) using cell address
+    const cellAddress = `${CONFIG.quantityColumn}${rowNumber}`;
+    console.log(`Targeting cell: ${cellAddress}`);
+
+    const cell = sheet.getCell(cellAddress);
 
     if (isCurrentlyHighlighted) {
         cell.fill = { type: 'pattern', pattern: 'none' };
+        console.log(`Removed highlight from ${cellAddress}`);
     } else {
         cell.fill = {
             type: 'pattern',
             pattern: 'solid',
             fgColor: { argb: 'FFFFFF00' }
         };
+        console.log(`Applied highlight to ${cellAddress}`);
     }
 
     if (isCurrentlyHighlighted) {
         resultItem.classList.remove('highlighted');
         resultItem.querySelector('.highlight-btn').textContent = 'Highlight Low Stock';
-        showStatus(`Highlight removed from row ${rowNumber} on ${sheetName}`, 'success');
+        showStatus(`Highlight removed from ${cellAddress}`, 'success');
     } else {
         resultItem.classList.add('highlighted');
         resultItem.querySelector('.highlight-btn').textContent = 'Remove Highlight';
-        showStatus(`Row ${rowNumber} highlighted on ${sheetName}`, 'success');
+        showStatus(`Cell ${cellAddress} highlighted`, 'success');
     }
 }
 
